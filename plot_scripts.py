@@ -30,27 +30,29 @@ def plot_f_logf_sigma(ax, f, sigma):
     return axes
 
 
-def multi_scales_plot(ax, x_data, data_list):
-    """
-    Uses multiple instances of twinx to create multi scale axes.
-    Input: Axes the plot will be drawn in. x_data. List of tuples, each contains: (y_data, ylabel, linestyle, color)
-    x_data for must be equal!
-    Returns axes.
-    """
-    N = len(data_list)
-    axes = [ax]
-    for i in range(N-1):
-        axes.append(ax.twinx())
-    for ax, (data, ylabel) in zip(axes, data_list):
-        
-    
-    return axes
+#def multi_scales_plot(ax, x_data, data_list):
+#    """
+#    Uses multiple instances of twinx to create multi scale axes.
+#    Input: Axes the plot will be drawn in. x_data. List of tuples, each contains: (y_data, ylabel, linestyle, color)
+#    x_data for must be equal!
+#    Returns axes.
+#    """
+#    N = len(data_list)
+#    axes = [ax]
+#    for i in range(N-1):
+#        axes.append(ax.twinx())
+#    for ax, (data, ylabel) in zip(axes, data_list):
+#        
+#    
+#    return axes
 
 
 
-fig, axes = plt.subplots()
+
 
 if __name__ == "__main__":
+    fig, axes = plt.subplots()
+    
     x_test = np.linspace(0,10,100)
     y1_test = np.exp(-x_test)
     y2_test = np.sin(x_test)
