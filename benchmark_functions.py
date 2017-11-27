@@ -54,7 +54,7 @@ def get_parameter_range(func_name):
     if func_name == "sphere":
         xi_low, xi_high = -10, 10
     elif func_name == "rosenbrock":
-        xi_low, xi_high = -10, 10
+        xi_low, xi_high = -3, 3
     elif func_name == "rastrigin":
         xi_low, xi_high = -5.12, 5.12
     elif func_name == "schwefel":

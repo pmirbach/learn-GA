@@ -36,21 +36,57 @@ import numpy as np
 
 
 
-fig, ax = plt.subplots()
-axes = [ax, ax.twinx(), ax.twinx()]
+#fig, ax = plt.subplots()
+#axes = [ax, ax.twinx(), ax.twinx()]
+#
+#fig.subplots_adjust(right=0.75)
+#axes[-1].spines['right'].set_position(('axes',1.2))
+#
+#axes[-1].set_frame_on(True)
+#axes[-1].patch.set_visible(False)
+#
+#colors = ('Green','Red','Blue')
+#for ax, color in zip(axes, colors):
+#    data = np.random.random(1)* np.random.random(10)
+#    ax.plot(data, marker='o',linestyle='none', color=color)
+#    ax.set_ylabel('{} Thing'.format(color),color=color)
+#    ax.tick_params(axis='y', colors=color)
+#axes[0].set_xlabel('X-axis')
+#
+#plt.show()
 
-fig.subplots_adjust(right=0.75)
-axes[-1].spines['right'].set_position(('axes',1.2))
 
-axes[-1].set_frame_on(True)
-axes[-1].patch.set_visible(False)
 
-colors = ('Green','Red','Blue')
-for ax, color in zip(axes, colors):
-    data = np.random.random(1)* np.random.random(10)
-    ax.plot(data, marker='o',linestyle='none', color=color)
-    ax.set_ylabel('{} Thing'.format(color),color=color)
-    ax.tick_params(axis='y', colors=color)
-axes[0].set_xlabel('X-axis')
 
-plt.show()
+
+a = np.array([1,2,3])
+print(a)
+a = np.where( a <= 2.0, a, 2 )
+print(a)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
