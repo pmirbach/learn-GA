@@ -12,9 +12,9 @@ from benchmark_functions import sphere, rosenbrock, rastrigin, schwefel, get_par
 from plot_scripts import plot_f_logf_sigma
 
 
-fitness_fun = rosenbrock
+fitness_fun = sphere
 N_dim = 2
-N_generations = 1000
+N_generations = 100
 
 
 flag_show2Dplot = 1

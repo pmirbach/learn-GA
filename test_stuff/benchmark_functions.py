@@ -6,10 +6,10 @@ Created on Wed Nov 22 23:52:58 2017
 """
 
 import numpy as np
-
-import matplotlib.pyplot as plt
-from matplotlib.colors import BoundaryNorm
-from matplotlib.ticker import MaxNLocator
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import BoundaryNorm
+    from matplotlib.ticker import MaxNLocator
 
 
 def sphere(x):
@@ -50,7 +50,18 @@ def schwefel(x):
         res += x[i] * np.sin( np.sqrt( np.abs( x[i] ) ) )
     return res
 
-
+def get_parameter_range(func_name):
+    if func_name == "sphere":
+        xi_low, xi_high = -10, 10
+    elif func_name == "rosenbrock":
+        xi_low, xi_high = -3, 3
+    elif func_name == "rastrigin":
+        xi_low, xi_high = -5.12, 5.12
+    elif func_name == "schwefel":
+        xi_low, xi_high = -500, 500
+    else:
+        assert "Not a valid function name"
+    return (xi_low, xi_high)
 
 
 
@@ -74,6 +85,8 @@ if __name__ == "__main__":
     
     im = ax0.pcolormesh(X, Y, Z, cmap=cmap, norm=norm)
     fig.colorbar(im, ax=ax0)
+    
+    ax0.plot()
     
     plt.show()
 

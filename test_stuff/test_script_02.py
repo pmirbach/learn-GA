@@ -1,77 +1,71 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Nov 24 16:32:08 2017
+Layer images above one another using alpha blending
+"""
+#from __future__ import division
 
-@author: Philip
-"""
+from benchmark_functions import rastrigin, get_parameter_range
+
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-## Plot circle of radius 3.
-#
-#an = np.linspace(0, 2 * np.pi, 100)
-#fig, axs = plt.subplots(2, 2)
-#
-#axs[0, 0].plot(3 * np.cos(an), 3 * np.sin(an))
-#axs[0, 0].set_title('not equal, looks like ellipse', fontsize=10)
-#
-#axs[0, 1].plot(3 * np.cos(an), 3 * np.sin(an))
-#axs[0, 1].axis('equal')
-#axs[0, 1].set_title('equal, looks like circle', fontsize=10)
-#
-#axs[1, 0].plot(3 * np.cos(an), 3 * np.sin(an))
-#axs[1, 0].axis('equal')
-#axs[1, 0].axis([-3, 3, -3, 3])
-#axs[1, 0].set_title('still a circle, even after changing limits', fontsize=10)
-#
-#axs[1, 1].plot(3 * np.cos(an), 3 * np.sin(an))
-#axs[1, 1].set_aspect('equal', 'box')
-#axs[1, 1].set_title('still a circle, auto-adjusted data limits', fontsize=10)
-#
-#fig.tight_layout()
-#
-#plt.show()
 
+fitness_fun = rastrigin
 
-
-
-#fig, ax = plt.subplots()
-#axes = [ax, ax.twinx(), ax.twinx()]
-#
-#fig.subplots_adjust(right=0.75)
-#axes[-1].spines['right'].set_position(('axes',1.2))
-#
-#axes[-1].set_frame_on(True)
-#axes[-1].patch.set_visible(False)
-#
-#colors = ('Green','Red','Blue')
-#for ax, color in zip(axes, colors):
-#    data = np.random.random(1)* np.random.random(10)
-#    ax.plot(data, marker='o',linestyle='none', color=color)
-#    ax.set_ylabel('{} Thing'.format(color),color=color)
-#    ax.tick_params(axis='y', colors=color)
-#axes[0].set_xlabel('X-axis')
-#
-#plt.show()
+def penalty_fun( x ):
+    g = np.sum(x) - 2
+    return - np.min( [g, 0] )
 
 
 
 
 
-a = np.array([1,2,3])
-print(a)
-a = np.where( a <= 2.0, a, 2 )
-print(a)
+def func3(x, y):
+    return (1 - x/2 + x**5 + y**3)*np.exp(-(x**2 + y**2))
+
+# make these smaller to increase the resolution
+dx, dy = 0.05, 0.05
+
+x = np.arange(-3.0, 3.0, dx)
+y = np.arange(-3.0, 3.0, dy)
+X, Y = np.meshgrid(x, y)
+
+# when layering multiple images, the images need to have the same
+# extent.  This does not mean they need to have the same shape, but
+# they both need to render to the same coordinate system determined by
+# xmin, xmax, ymin, ymax.  Note if you use different interpolations
+# for the images their apparent extent could be different due to
+# interpolation edge effects
+
+
+xmin, xmax, ymin, ymax = np.amin(x), np.amax(x), np.amin(y), np.amax(y)
+extent = xmin, xmax, ymin, ymax
 
 
 
+fig, ax = plt.subplots()
 
 
 
+Zs = np.array( [ fitness_fun(x) for x in zip( np.ravel(X), np.ravel(Y) ) ] )
+Z = np.reshape(Zs, X.shape)
+
+Penaltys = np.array( [ penalty_fun(x) for x in zip( np.ravel(X), np.ravel(Y) ) ] )
+Penalty = np.reshape(Penaltys, X.shape)
 
 
+im1 = ax.imshow(Z, cmap=plt.cm.gray, interpolation='nearest',
+                 extent=extent,origin="lower")
+im2 = ax.imshow(Penalty, cmap=plt.cm.Reds, alpha=.5, interpolation='bilinear',
+                 extent=extent,origin="lower")
 
+#im1 = ax.pcolormesh(X,Y,Z, cmap=plt.cm.gray)
+#im2 = ax.pcolormesh(X,Y,Penalty, cmap=plt.cm.Reds, alpha=.2)
+fig.colorbar(im1, ax=ax)
+
+ax.plot([0,1,2],[0,1,2])
+
+plt.show()
 
 
 
