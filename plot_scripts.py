@@ -12,7 +12,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 
 def get_restrain_cmap():
-    colors = [(1, 1, 1),(1, 0, 0),(1, 0, 0)] 
+    colors = [(1, 1, 1),(1, 0, 0),(1, 0, 0),(1, 0, 0)] 
     nbins = 100
     cmap_name = 'my_list'
     cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=nbins)
