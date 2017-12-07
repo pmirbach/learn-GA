@@ -22,8 +22,10 @@ flag_show2Dplot = 1
 if N_dim != 2:
     flag_show2Dplot = 0
 
+
 mut_sigma_0 = 1.0
 mut_tau = 1.2
+
 
 rechenberg_G = 5
 
@@ -50,6 +52,10 @@ class Chromosome_restrain(Base_Chromosome):
         super(Chromosome_restrain, self).__init__(x, *args, **kwargs)
         self.penalty = penalty_fun(x)
         self.infeasible = True if self.penalty else False
+        self.alpha = alpha
+        self.fitness_eff = self.fitness + alpha * self.penalty
+    
+    def set_alpha(self, alpha):
         self.alpha = alpha
         self.fitness_eff = self.fitness + alpha * self.penalty
 
@@ -109,54 +115,56 @@ def GA_death(parent, N_generations, method='death', rechenberg=False):
                     parent.sigma /= mut_tau
                 rechenberg_succes_counter = 0
         evo_hist.append(parent)
-        parent.alpha = alpha_vec[i]
+        parent.set_alpha(alpha_vec[i])
     return evo_hist
 
 
 
-#def GA(parent, N_generations):
-#
-#    penalty_counter = 0
-#    rechenberg_succes_counter = 0
-#
-#    evo_hist = [parent]
-#
-#    for i in range(N_generations):
-#
-##        pen_alpha = pen_alpha_vec[i]
-#
-#        child = mutation(parent)
-#        if child.infeasible:
-#            penalty_counter += 1
-#
-#        if child.fitness_effective < parent.fitness_effective:
-#            rechenberg_succes_counter += 1
-#            parent = child
-#
-##        if (i+1) % rechenberg_G == 0:
-##            if rechenberg_succes_counter / rechenberg_G > 1/5:
-##                parent.sigma *= mut_tau
-##            elif rechenberg_succes_counter / rechenberg_G < 1/5:
-##                parent.sigma /= mut_tau
-##            rechenberg_succes_counter = 0
-#
-#        if (i+1) % penalty_G == 0:
-#            if penalty_counter / penalty_G > 1/5:
-#                parent.alpha *= 2
-#            elif penalty_counter / penalty_G < 1/5:
-#                parent.alpha /= 2
-#            penalty_counter = 0
-#
-#        evo_hist.append(parent)
-#    return evo_hist
+def GA_adaptive(parent, N_generations):
+
+    penalty_counter = 0
+    rechenberg_succes_counter = 0
+    
+    rechenberg_G = 50
+
+    evo_hist = [parent]
+
+    for i in range(N_generations):
+
+#        pen_alpha = pen_alpha_vec[i]
+
+        child = mutation(parent)
+        if child.infeasible:
+            penalty_counter += 1
+
+        if child.fitness_eff < parent.fitness_eff:
+            rechenberg_succes_counter += 1
+            parent = child
+
+        if (i+1) % rechenberg_G == 0:
+            if rechenberg_succes_counter / rechenberg_G > 1/5:
+                parent.sigma *= mut_tau
+            elif rechenberg_succes_counter / rechenberg_G < 1/5:
+                parent.sigma /= mut_tau
+            rechenberg_succes_counter = 0
+
+        if (i+1) % penalty_G == 0:
+            if penalty_counter / penalty_G > 1/5:
+                parent.set_alpha(parent.alpha * 2.0)
+            elif penalty_counter / penalty_G < 1/5:
+                parent.set_alpha(parent.alpha / 1.2)
+            penalty_counter = 0
+
+        evo_hist.append(parent)
+    return evo_hist
 
 
 (xi_low, xi_high) = get_parameter_range(fitness_fun.__name__)
 
 parent = get_parent()
 
-evo_hist = GA_death(parent, 10000, method='det', rechenberg=True)
-#evo_hist = GA(parent, N_generations)
+#evo_hist = GA_death(parent, 10000, method='det', rechenberg=True)
+evo_hist = GA_adaptive(parent, 1000)
 
 
 
