@@ -26,7 +26,12 @@ print(obj2.x, obj2.y)
 
 
 
-
+#a = [1.11,2.22,3.33]
+#b = [4.44,5.55,6.66,7.77]
+#
+#format_str = 'x: {3.2f}, sum: {}'
+#
+#print(format_str.format(b, sum(b)))
 
 
 
