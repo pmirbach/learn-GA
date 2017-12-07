@@ -8,8 +8,6 @@ Created on Thu Dec  7 10:25:53 2017
 
 import numpy as np
 from copy import deepcopy
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
 
 
 
@@ -19,12 +17,14 @@ N_generations = 100     # Number of generations
 
 mut_sigma = 0.05        # Mutation step-size
 
+
+flg_parents_nr_fixed = 0
 N_parents = 10          # Number of parents in GA
 N_childs = 100          # Number of childs in GA
 GA_selection_method = 'plus'    # plus or comma selection
 GA_save_hist = 1        # Save history of evolution
 
-plot_update_ylim = 0
+plot_update_ylim = 1
 
 
 xi_low, xi_high = 0, 1  # ZDT1 defined for 0<xi<1
@@ -102,7 +102,18 @@ class Population():
             
         rank1 = self.__get_childs_best_rank()
         
-        self.survivors = rank1
+        if flg_parents_nr_fixed:
+            if len(rank1) > self.N_parents:
+                self.survivors = [rank1[1], *np.random.choice(rank1[1:-1], N_parents-2), rank1[-1]]
+            elif len(rank1) < self.N_parents:
+                N_missing_childs = self.N_parents - len(rank1)
+                rank2 = self.__get_childs_best_rank()
+                self.survivors = [*rank1, *np.random.choice(rank2, N_missing_childs)]
+            else:
+                self.survivors = rank1
+        else:
+            self.survivors = rank1
+            
         self.parent = self.survivors
     
     
@@ -119,7 +130,7 @@ class Population():
                 childs_best_rank.append(candidate)
                 best_f2 = candidate.f2
                 self.childs.remove(candidate)
-        return childs_best_rank       
+        return childs_best_rank
         
     
 
@@ -135,8 +146,7 @@ def GA(N_generations, GA_save_hist=1):
         population.mutation()
         population.selection()
         if GA_save_hist:
-            current_population = deepcopy(population)
-            population_hist.append(current_population)
+            population_hist.append(deepcopy(population))
     
     if GA_save_hist:
         return population_hist
@@ -146,6 +156,12 @@ def GA(N_generations, GA_save_hist=1):
 
 
 if __name__ == '__main__':
+    
+    import matplotlib.pyplot as plt
+    from matplotlib.widgets import Slider
+    from plot_scripts import plot_font_size
+    
+    plot_font_size()
     
     def plotter(ax, population):
         all_childs_f1 = [child.f1 for child in population.childs]
@@ -164,7 +180,7 @@ if __name__ == '__main__':
         
     
     fig, ax = plt.subplots()
-    ax.set(title='test', xlabel='$f_1$', ylabel='$f_2$')
+    ax.set(title='Non-dominated Sorting', xlabel='$f_1$', ylabel='$f_2$')
     
     
     if GA_save_hist:
