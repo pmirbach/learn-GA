@@ -119,7 +119,7 @@ class Population():
     
     def __get_childs_best_rank(self):
                 
-        childs_sorted_f1 = sorted(self.childs, key=lambda Chromosome: Chromosome.f1)
+        childs_sorted_f1 = sorted(self.childs, key=lambda Chromosome: (Chromosome.f1, Chromosome.f2))
         childs_best_rank = [childs_sorted_f1.pop(0)]
         best_f2 = childs_best_rank[0].f2
         self.childs.remove(childs_best_rank[0])
