@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec  7 10:25:53 2017
+Created on Fri Dec 15 10:08:26 2017
 
-@author: pmirbach
+@author: Philip
 """
 
 import numpy as np
@@ -15,7 +14,7 @@ N_dim = 30              # Number of dimensions
 N_generations = 100     # Number of generations
 
 
-mut_sigma = 0.05        # Mutation step-size
+mut_sigma = 0.03        # Mutation step-size
 
 
 flg_parents_nr_fixed = 0
@@ -99,20 +98,17 @@ class Population():
         
         if self.flg_selection == 'plus':
             self.childs.extend(self.parent)
-            
-        rank1 = self.__get_childs_best_rank()
         
-        if flg_parents_nr_fixed:
-            if len(rank1) > self.N_parents:
-                self.survivors = [rank1[1], *np.random.choice(rank1[1:-1], N_parents-2), rank1[-1]]
-            elif len(rank1) < self.N_parents:
-                N_missing_childs = self.N_parents - len(rank1)
-                rank2 = self.__get_childs_best_rank()
-                self.survivors = [*rank1, *np.random.choice(rank2, N_missing_childs)]
+        self.survivors = []
+        N_left = self.N_parents
+        while len(self.survivors) < self.N_parents:
+            best_rank = self.__get_childs_best_rank()
+            N_best_rank = len(best_rank)
+            if N_best_rank > N_left:
+                best_NSGA_2 = self.__NSGA_2(best_rank, N_left)
+                self.survivors.extend(best_NSGA_2)
             else:
-                self.survivors = rank1
-        else:
-            self.survivors = rank1
+                self.survivors.extend(best_rank)
             
         self.parent = self.survivors
     
@@ -131,15 +127,26 @@ class Population():
                 best_f2 = candidate.f2
                 self.childs.remove(candidate)
         return childs_best_rank
+    
+    
+    def __NSGA_2(self, candidates, N):
         
+        if N == 1:
+            return np.random.choice(candidates)
+        else:
+            candidates[0].crowd_dist = candidates[-1].crowd_dist = np.inf
+            for i in range(1,len(candidates)-1):
+                crowd_dist = np.abs(candidates[i+1].x - candidates[i-1].x)
+                candidates[i].crowd_dist = np.sum(crowd_dist)
+            cand_sort_cd = sorted(candidates, key=lambda Chromosome: Chromosome.crowd_dist, reverse=True)
+            return cand_sort_cd[0:N]                
+            
     
 
 def GA(N_generations, GA_save_hist=1):
     
     population = Population(N_parents, N_childs, flg_selection=GA_selection_method)
-    
-    if GA_save_hist:
-        population_hist = []
+    population_hist = []
     
     for _ in range(N_generations):
         population.crossover()
@@ -214,29 +221,3 @@ if __name__ == '__main__':
         plotter(ax, population)
                
     plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
