@@ -73,14 +73,19 @@ class Population():
         return initial_population
     
     
-    def crossover(self):
+    def crossover(self, N=0):
 
-        self.childs = []
-        while len(self.childs) < self.N_childs:
-            parent_1, parent_2 = np.random.choice(self.parent, size=2)
-            splitting_point = np.random.randint(low=1, high=N_dim)
-            child_x = [*parent_1.x[:splitting_point], *parent_2.x[splitting_point:]]
-            self.childs.append(Chromosome(child_x))
+        if N == 0:
+            self.childs = np.random.choice(self.parent, size=N_childs)
+        elif N == 1: 
+            self.childs = []
+            while len(self.childs) < self.N_childs:
+                parent_1, parent_2 = np.random.choice(self.parent, size=2)
+                splitting_point = np.random.randint(low=1, high=N_dim)
+                child_x = [*parent_1.x[:splitting_point], *parent_2.x[splitting_point:]]
+                self.childs.append(Chromosome(child_x))
+        else:
+            assert "No crossover method for N>1!"
     
     
     def mutation(self):
@@ -149,7 +154,7 @@ def GA(N_generations, GA_save_hist=1):
     population_hist = []
     
     for _ in range(N_generations):
-        population.crossover()
+        population.crossover(N=0)
         population.mutation()
         population.selection()
         if GA_save_hist:
